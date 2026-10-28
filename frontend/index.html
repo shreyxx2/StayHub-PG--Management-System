@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StayHub PG - Smart PG & Hostel Management System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/index.html">
+                <i class="fas fa-hotel text-primary fs-3"></i>
+                <span>StayHub <span class="text-secondary fw-bold">PG</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item"><a class="nav-link active" href="/index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/showcase.html">SQL Showcase</a></li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0 align-items-center" id="navbar-auth-links">
+                    <!-- Populated dynamically by api.js -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header Section -->
+    <header class="hero-section">
+        <div class="container text-center">
+            <span class="hero-badge mb-3">
+                <i class="fas fa-database me-1"></i> DBMS Academic Capstone Project &bull; MySQL 8 &bull; 3NF
+            </span>
+            <h1 class="display-5 fw-bold mb-3">Find Your Ideal PG Accomodation</h1>
+            <p class="lead text-light opacity-75 max-w-700 mx-auto mb-4">
+                Explore verified PG properties across Bangalore, Pune, and Hyderabad. Book available beds live, manage rent payments, and log grievances with complete transparency.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="#propertiesSection" class="btn btn-primary px-4 py-2 fw-semibold">
+                    <i class="fas fa-bed me-2"></i> Browse Available PGs
+                </a>
+                <a href="/showcase.html" class="btn btn-outline-light px-4 py-2 fw-semibold">
+                    <i class="fas fa-terminal me-2"></i> Open SQL Viva Showcase
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <!-- Live SQL Search & Filter Bar -->
+        <div class="filter-bar shadow-sm mb-5">
+            <form id="filterForm" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold text-muted">Search Keyword / City</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Property name, Bangalore, Pune...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-muted">Room Sharing Type</label>
+                    <select id="roomTypeSelect" class="form-select">
+                        <option value="">All Room Types</option>
+                        <option value="Single">Single (Private)</option>
+                        <option value="Double">Double Sharing</option>
+                        <option value="Triple">Triple Sharing</option>
+                        <option value="Dormitory">Dormitory</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold text-muted">Max Budget (₹/Month)</label>
+                    <select id="maxRentSelect" class="form-select">
+                        <option value="">Any Budget</option>
+                        <option value="6000">Up to ₹6,000</option>
+                        <option value="9000">Up to ₹9,000</option>
+                        <option value="12000">Up to ₹12,000</option>
+                        <option value="15000">Up to ₹15,000</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex flex-column gap-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="availableOnlyCheck" checked>
+                        <label class="form-check-label small fw-semibold" for="availableOnlyCheck">Available Beds Only</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        <i class="fas fa-filter me-1"></i> Apply Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Section Title & Live Counters -->
+        <div id="propertiesSection" class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">PG Hostels & Residences</h3>
+                <p class="text-muted small mb-0">Live bed inventory synced via SQL parameterized queries</p>
+            </div>
+            <div id="resultsCountBadge" class="badge bg-primary fs-6 px-3 py-2 rounded-pill">
+                Loading...
+            </div>
+        </div>
+
+        <!-- Properties Grid -->
+        <div id="propertiesGrid" class="row g-4">
+            <!-- Rendered dynamically by home.js -->
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="text-muted mt-2">Fetching properties from database...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <div class="d-flex justify-content-center gap-4 mb-3">
+                <a href="/index.html">Home</a>
+                <a href="/showcase.html">SQL Showcase</a>
+                <a href="/login.html">Login</a>
+                <a href="/register.html">Register</a>
+            </div>
+            <p class="mb-1 text-light opacity-75">StayHub PG Management System &bull; College DBMS Academic Project</p>
+            <p class="small text-muted mb-0">Powered by MySQL 8, Express.js, Raw Parameterized SQL, and Vanilla JavaScript</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/home.js"></script>
+</body>
+</html>
+

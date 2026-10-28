@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Master Console - StayHub PG</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/index.html">
+                <i class="fas fa-hotel text-primary fs-3"></i>
+                <span>StayHub <span class="text-secondary fw-bold">PG</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/admin-dashboard.html">Admin Console</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/showcase.html">SQL Showcase</a></li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0 align-items-center" id="navbar-auth-links">
+                    <!-- Populated dynamically by api.js -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <!-- Admin Banner -->
+        <div class="custom-card p-4 mb-4 bg-white">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 mb-2 fw-semibold">
+                        <i class="fas fa-user-shield me-1"></i> System Administrator
+                    </span>
+                    <h2 class="fw-bold mb-1">Global DBMS Administration Console</h2>
+                    <p class="text-muted small mb-0">System-wide monitoring, user accounts, and direct access to SQL Showcase</p>
+                </div>
+                <div>
+                    <a href="/showcase.html" class="btn btn-outline-primary fw-semibold">
+                        <i class="fas fa-terminal me-1"></i> Launch Viva SQL Showcase
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global System Metrics -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-icon blue"><i class="fas fa-user-tie"></i></div>
+                    <div>
+                        <div class="kpi-value" id="adminOwners">0</div>
+                        <div class="kpi-label">Registered Owners</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-icon green"><i class="fas fa-hotel"></i></div>
+                    <div>
+                        <div class="kpi-value" id="adminProperties">0</div>
+                        <div class="kpi-label">PG Hostels</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-icon purple"><i class="fas fa-bed"></i></div>
+                    <div>
+                        <div class="kpi-value" id="adminBeds">0</div>
+                        <div class="kpi-label">Total Beds (<span id="adminAvailableBeds" class="text-success">0</span> Free)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="kpi-card">
+                    <div class="kpi-icon amber"><i class="fas fa-coins"></i></div>
+                    <div>
+                        <div class="kpi-value" id="adminRevenue">₹0</div>
+                        <div class="kpi-label">Lifetime Collections</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <ul class="nav nav-pills mb-4 bg-white p-2 rounded-3 shadow-sm border" id="adminTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-semibold" data-bs-toggle="pill" data-bs-target="#admin-tab-users" type="button">
+                    <i class="fas fa-users-cog me-2"></i> User Accounts
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#admin-tab-bookings" type="button">
+                    <i class="fas fa-book me-2"></i> All System Bookings
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#admin-tab-payments" type="button">
+                    <i class="fas fa-receipt me-2"></i> All Payments
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#admin-tab-complaints" type="button">
+                    <i class="fas fa-exclamation-triangle me-2"></i> All Complaints
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Contents -->
+        <div class="tab-content">
+            <!-- TAB 1: USERS -->
+            <div class="tab-pane fade show active" id="admin-tab-users">
+                <div class="custom-card p-4">
+                    <h5 class="fw-bold mb-3">System User Directory (Authentication Accounts)</h5>
+                    <div class="table-responsive">
+                        <table class="table custom-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Email (Login ID)</th>
+                                    <th>Role</th>
+                                    <th>Linked Name</th>
+                                    <th>Contact Phone</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody">
+                                <tr><td colspan="7" class="text-center py-4">Loading users...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: BOOKINGS -->
+            <div class="tab-pane fade" id="admin-tab-bookings">
+                <div class="custom-card p-4">
+                    <h5 class="fw-bold mb-3">All Active & Historic Bookings</h5>
+                    <div class="table-responsive">
+                        <table class="table custom-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Tenant</th>
+                                    <th>Property</th>
+                                    <th>Room & Bed</th>
+                                    <th>Check-In</th>
+                                    <th>Rent / Mo</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminBookingsTableBody">
+                                <tr><td colspan="7" class="text-center py-4">Loading bookings...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: PAYMENTS -->
+            <div class="tab-pane fade" id="admin-tab-payments">
+                <div class="custom-card p-4">
+                    <h5 class="fw-bold mb-3">Complete System Payment Ledger</h5>
+                    <div class="table-responsive">
+                        <table class="table custom-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Booking #</th>
+                                    <th>Tenant</th>
+                                    <th>PG Property</th>
+                                    <th>Amount</th>
+                                    <th>Mode</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminPaymentsTableBody">
+                                <tr><td colspan="7" class="text-center py-4">Loading payments...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: COMPLAINTS -->
+            <div class="tab-pane fade" id="admin-tab-complaints">
+                <div class="custom-card p-4">
+                    <h5 class="fw-bold mb-3">All Grievances Across All Hostels</h5>
+                    <div class="table-responsive">
+                        <table class="table custom-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Ticket #</th>
+                                    <th>Date</th>
+                                    <th>Tenant</th>
+                                    <th>Assigned Owner</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminComplaintsTableBody">
+                                <tr><td colspan="6" class="text-center py-4">Loading complaints...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>
+

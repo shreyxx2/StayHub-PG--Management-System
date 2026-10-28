@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBMS Viva Interactive SQL Showcase - StayHub PG</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .showcase-result-box {
+            background: #ffffff;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-top: 1.5rem;
+            display: none;
+        }
+        .sql-pre {
+            background: #0f172a;
+            color: #38bdf8;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .viva-tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 text-white" href="/index.html">
+                <i class="fas fa-terminal text-info fs-3"></i>
+                <span>StayHub <span class="text-info fw-bold">SQL Showcase</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarShowcase">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarShowcase">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item"><a class="nav-link text-white-50" href="/index.html"><i class="fas fa-home me-1"></i> Home</a></li>
+                    <li class="nav-item"><a class="nav-link active text-white" href="/showcase.html"><i class="fas fa-terminal me-1"></i> Showcase Console</a></li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0 align-items-center" id="navbar-auth-links">
+                    <!-- Populated dynamically -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Banner -->
+    <header class="bg-white border-bottom py-4 mb-4">
+        <div class="container">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <span class="badge bg-primary px-3 py-1 mb-2 fw-semibold">
+                        <i class="fas fa-graduation-cap me-1"></i> DBMS College Capstone &bull; Viva Evaluation Suite
+                    </span>
+                    <h2 class="fw-bold text-dark mb-1">Interactive DBMS Showcase & Execution Engine</h2>
+                    <p class="text-muted small mb-0">
+                        Live execution against MySQL 8.0: 30 master queries, 5 virtual relations, triggers, cursor and stored procedures.
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary btn-sm" onclick="scrollToResult()">
+                        <i class="fas fa-table me-1"></i> View Last Result
+                    </button>
+                    <a href="/index.html" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-external-link-alt me-1"></i> View Web App
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mb-5">
+        <!-- Main Showcase Tabs -->
+        <ul class="nav nav-pills mb-4 bg-white p-2 rounded-3 shadow-sm border" id="showcaseTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-semibold" data-bs-toggle="pill" data-bs-target="#tab-queries" type="button">
+                    <i class="fas fa-database me-2"></i> 30 Commented Queries
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#tab-views" type="button">
+                    <i class="fas fa-table me-2"></i> 5 Virtual Views
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#tab-triggers" type="button">
+                    <i class="fas fa-bolt me-2 text-warning"></i> Triggers Demo (Viva Special)
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#tab-procedures" type="button">
+                    <i class="fas fa-cogs me-2"></i> Stored Procs & Cursor
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#tab-sandbox" type="button">
+                    <i class="fas fa-code me-2"></i> Live SQL Sandbox
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#tab-schema" type="button">
+                    <i class="fas fa-project-diagram me-2"></i> ER & 3NF Schema
+                </button>
+            </li>
+        </ul>
+
+        <!-- Live Query Execution Output Panel (Pinned) -->
+        <div id="liveResultBox" class="showcase-result-box p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success px-2 py-1"><i class="fas fa-check-circle me-1"></i> Success</span>
+                    <h5 class="fw-bold mb-0" id="resultTitle">Execution Result</h5>
+                </div>
+                <div class="small text-muted d-flex gap-3">
+                    <span><i class="fas fa-clock text-primary me-1"></i> Execution Time: <strong id="resultTiming" class="text-dark">0 ms</strong></span>
+                    <span><i class="fas fa-list-ol text-primary me-1"></i> Rows Returned: <strong id="resultRowCount" class="text-dark">0</strong></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="small fw-semibold text-muted mb-1">Executed SQL:</div>
+                <pre id="resultSqlCode" class="sql-pre small"></pre>
+            </div>
+
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="table custom-table table-bordered table-striped" id="resultTable">
+                    <thead id="resultTableHead"></thead>
+                    <tbody id="resultTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="tab-content">
+            <!-- TAB 1: 30 COMMENTED QUERIES -->
+            <div class="tab-pane fade show active" id="tab-queries">
+                <!-- Filter Pills -->
+                <div class="d-flex flex-wrap gap-2 mb-4" id="queryCategoryFilter">
+                    <button class="btn btn-sm btn-primary active query-cat-btn" data-category="ALL">All 30 Queries</button>
+                    <button class="btn btn-sm btn-outline-secondary query-cat-btn" data-category="Basic SQL">Basic & Filtering</button>
+                    <button class="btn btn-sm btn-outline-secondary query-cat-btn" data-category="Joins">Joins (3-6 Tables)</button>
+                    <button class="btn btn-sm btn-outline-secondary query-cat-btn" data-category="Aggregation">Aggregation & GROUP BY</button>
+                    <button class="btn btn-sm btn-outline-secondary query-cat-btn" data-category="Subqueries">Subqueries (EXISTS/ALL)</button>
+                    <button class="btn btn-sm btn-outline-secondary query-cat-btn" data-category="Set Operations">Set Operations (UNION/INTERSECT/EXCEPT)</button>
+                </div>
+
+                <!-- Queries Container -->
+                <div id="queriesListContainer" class="d-flex flex-column gap-3">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="text-muted mt-2">Loading 30 master SQL queries...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: 5 VIRTUAL VIEWS -->
+            <div class="tab-pane fade" id="tab-views">
+                <div class="row g-4" id="viewsListContainer">
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="text-muted mt-2">Loading virtual views...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: TRIGGERS DEMO (VIVA LIVE PROOF) -->
+            <div class="tab-pane fade" id="tab-triggers">
+                <div class="alert alert-warning border-warning d-flex align-items-center gap-2 mb-4 shadow-sm">
+                    <i class="fas fa-lightbulb fs-3 text-warning"></i>
+                    <div>
+                        <strong>Viva Examiner Live Demonstration:</strong> Click any trigger demo button below to test database-level event-condition-action (ECA) execution in real-time. The test will perform the transaction, inspect before & after state in MySQL, and output the proof!
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Trigger Demo 1 -->
+                    <div class="col-md-6">
+                        <div class="custom-card p-4 h-100 border-start border-4 border-success">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="fw-bold mb-1">Trigger 2: Auto Occupy Bed</h5>
+                                <span class="badge bg-success">AFTER INSERT</span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                <code>trg_occupy_bed_after_booking</code>: When a new Booking is inserted with status 'Active', the trigger fires and immediately switches Bed.status from 'Available' to 'Occupied'.
+                            </p>
+                            <button class="btn btn-success btn-sm w-100 trigger-test-btn" data-demo="occupy_on_booking">
+                                <i class="fas fa-play me-1"></i> Test Bed Occupancy Trigger Live
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Trigger Demo 2 -->
+                    <div class="col-md-6">
+                        <div class="custom-card p-4 h-100 border-start border-4 border-primary">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="fw-bold mb-1">Trigger 3: Auto Free Bed on Checkout</h5>
+                                <span class="badge bg-primary">AFTER UPDATE</span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                <code>trg_free_bed_after_checkout</code>: When a Booking transitions from 'Active' to 'Completed', this trigger automatically resets Bed.status back to 'Available'.
+                            </p>
+                            <button class="btn btn-primary btn-sm w-100 trigger-test-btn" data-demo="free_on_checkout">
+                                <i class="fas fa-play me-1"></i> Test Bed Freeing Trigger Live
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Trigger Demo 3 -->
+                    <div class="col-md-6">
+                        <div class="custom-card p-4 h-100 border-start border-4 border-danger">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="fw-bold mb-1">Trigger 1: Block Occupied Bed Booking</h5>
+                                <span class="badge bg-danger">BEFORE INSERT</span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                <code>trg_check_bed_before_booking</code>: Attempts to book an already occupied bed. The trigger checks bed status and raises <code>SIGNAL SQLSTATE '45000'</code>, aborting the insert!
+                            </p>
+                            <button class="btn btn-danger btn-sm w-100 trigger-test-btn" data-demo="block_occupied_booking">
+                                <i class="fas fa-play me-1"></i> Test Booking Rejection Trigger
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Trigger Demo 4 -->
+                    <div class="col-md-6">
+                        <div class="custom-card p-4 h-100 border-start border-4 border-warning">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="fw-bold mb-1">Trigger 5: Payment Amount Validation</h5>
+                                <span class="badge bg-warning text-dark">BEFORE INSERT</span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                <code>trg_validate_payment_amount</code>: Attempts to insert a payment of -250.00 INR. The defensive trigger intercepts the tuple and rejects it with custom SQLSTATE 45000.
+                            </p>
+                            <button class="btn btn-warning btn-sm w-100 trigger-test-btn" data-demo="validate_payment_amount">
+                                <i class="fas fa-play me-1"></i> Test Negative Payment Validation
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Trigger Demo 5 -->
+                    <div class="col-12">
+                        <div class="custom-card p-4 border-start border-4 border-info">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="fw-bold mb-1">Trigger 4: Auto-link Complaint to Owner (M:N Junction)</h5>
+                                <span class="badge bg-info text-dark">AFTER INSERT</span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                <code>trg_link_complaint_to_owner</code>: When a Tenant registers a grievance, the trigger traverses Tenant &rarr; Booking &rarr; Bed &rarr; Room &rarr; Property to locate the PG owner and automatically populates junction table <code>owner_complaint(owner_id, complaint_id)</code>!
+                            </p>
+                            <button class="btn btn-info btn-sm px-4 trigger-test-btn" data-demo="link_complaint_owner">
+                                <i class="fas fa-play me-1"></i> Test Automatic M:N Junction Insertion
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trigger Output Box -->
+                <div id="triggerResultBox" class="custom-card p-4 mt-4 shadow-sm" style="display: none;">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="fas fa-terminal text-primary"></i> Trigger Demonstration Output
+                    </h5>
+                    <div id="triggerResultContent"></div>
+                </div>
+            </div>
+
+            <!-- TAB 4: STORED PROCEDURES & CURSOR -->
+            <div class="tab-pane fade" id="tab-procedures">
+                <div class="custom-card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="fw-bold mb-1">Stored Procedure with Explicit Cursor</h5>
+                            <span class="viva-tag">CURSOR &bull; LOOP &bull; FETCH &bull; CONTINUE HANDLER</span>
+                        </div>
+                        <button class="btn btn-primary btn-sm px-4" id="runCursorBtn">
+                            <i class="fas fa-play me-1"></i> Execute generate_monthly_dues_report()
+                        </button>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Iterates over all active bookings row-by-row using a MySQL explicit cursor, evaluates outstanding balances using stored function <code>get_pending_rent(booking_id)</code>, categorizes payment status, and builds a temporary report table.
+                    </p>
+                    <pre class="sql-pre"><code>-- Cursor Definition Preview:
+DECLARE cur_bookings CURSOR FOR
+    SELECT bk.booking_id, t.name, p.name, bk.monthly_rent
+    FROM Booking bk ... WHERE bk.booking_status = 'Active';
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+OPEN cur_bookings;
+read_loop: LOOP
+    FETCH cur_bookings INTO ...;
+    IF done THEN LEAVE read_loop; END IF;
+    SET cur_pending = get_pending_rent(cur_booking_id);
+    INSERT INTO temp_dues_report ...;
+END LOOP;
+CLOSE cur_bookings;</code></pre>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="custom-card p-4 h-100">
+                            <h6 class="fw-bold mb-2">Stored Function 1: <code>get_pending_rent(booking_id)</code></h6>
+                            <p class="text-muted small">Calculates months elapsed &times; monthly rent minus sum of payments credited.</p>
+                            <pre class="sql-pre small"><code>SELECT booking_id, monthly_rent, 
+       get_pending_rent(booking_id) AS pending_due 
+FROM Booking LIMIT 5;</code></pre>
+                            <button class="btn btn-outline-primary btn-sm w-100 mt-2 run-sample-sql-btn" 
+                                data-sql="SELECT booking_id, check_in_date, monthly_rent, get_pending_rent(booking_id) AS pending_due FROM Booking WHERE booking_status = 'Active' LIMIT 5;">
+                                <i class="fas fa-play me-1"></i> Run Function Query
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="custom-card p-4 h-100">
+                            <h6 class="fw-bold mb-2">Stored Function 2: <code>get_occupancy_percentage(property_id)</code></h6>
+                            <p class="text-muted small">Computes live occupied beds divided by total beds for a given property ID.</p>
+                            <pre class="sql-pre small"><code>SELECT property_id, name, 
+       get_occupancy_percentage(property_id) AS occupancy_pct 
+FROM Property;</code></pre>
+                            <button class="btn btn-outline-primary btn-sm w-100 mt-2 run-sample-sql-btn" 
+                                data-sql="SELECT property_id, name, get_occupancy_percentage(property_id) AS occupancy_percentage FROM Property;">
+                                <i class="fas fa-play me-1"></i> Run Function Query
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: LIVE SQL SANDBOX -->
+            <div class="tab-pane fade" id="tab-sandbox">
+                <div class="custom-card p-4">
+                    <h5 class="fw-bold mb-2">Live SQL Query Console (Examiner Playground)</h5>
+                    <p class="text-muted small mb-3">
+                        Type any SELECT query against the <code>stayhub_pg</code> schema. Executed live via parameterization and returns execution time in milliseconds.
+                    </p>
+
+                    <div class="mb-3">
+                        <textarea id="customSqlInput" class="form-control sql-pre" rows="5" style="color: #38bdf8; background: #0f172a;"
+                            placeholder="SELECT p.name, COUNT(b.bed_id) AS total_beds FROM Property p JOIN Room r ON p.property_id = r.property_id JOIN Bed b ON r.room_id = b.room_id GROUP BY p.name;"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-secondary preset-sql-btn" data-sql="SELECT * FROM Owner;">Owner</button>
+                            <button class="btn btn-sm btn-outline-secondary preset-sql-btn" data-sql="SELECT * FROM Property;">Property</button>
+                            <button class="btn btn-sm btn-outline-secondary preset-sql-btn" data-sql="SELECT * FROM Bed LIMIT 10;">Bed</button>
+                            <button class="btn btn-sm btn-outline-secondary preset-sql-btn" data-sql="SELECT * FROM Tenant LIMIT 10;">Tenant</button>
+                            <button class="btn btn-sm btn-outline-secondary preset-sql-btn" data-sql="SELECT * FROM owner_complaint;">owner_complaint</button>
+                        </div>
+                        <button class="btn btn-primary fw-semibold px-4" id="runCustomSqlBtn">
+                            <i class="fas fa-play me-1"></i> Execute Query
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: ER & 3NF SCHEMA REFERENCE -->
+            <div class="tab-pane fade" id="tab-schema">
+                <div class="custom-card p-4">
+                    <h5 class="fw-bold mb-3">Entity-Relationship Structure & Relational Mapping</h5>
+                    
+                    <div class="table-responsive mb-4">
+                        <table class="table custom-table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Entity / Relation</th>
+                                    <th>Primary Key</th>
+                                    <th>Attributes</th>
+                                    <th>Foreign Keys</th>
+                                    <th>Normal Form Justification</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-bold">Owner</td>
+                                    <td><code>owner_id</code></td>
+                                    <td>name, phone</td>
+                                    <td>None</td>
+                                    <td>3NF: Atomic attributes, phone UNIQUE</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Property</td>
+                                    <td><code>property_id</code></td>
+                                    <td>name, address</td>
+                                    <td><code>owner_id &rarr; Owner</code></td>
+                                    <td>3NF: 1:N with Owner, no transitive attributes</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Room</td>
+                                    <td><code>room_id</code></td>
+                                    <td>room_type</td>
+                                    <td><code>property_id &rarr; Property</code></td>
+                                    <td>3NF: 1:N with Property</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Bed</td>
+                                    <td><code>bed_id</code></td>
+                                    <td>status</td>
+                                    <td><code>room_id &rarr; Room</code></td>
+                                    <td>3NF: 1:N with Room</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Tenant</td>
+                                    <td><code>tenant_id</code></td>
+                                    <td>name, phone</td>
+                                    <td>None</td>
+                                    <td>3NF: Atomic attributes, phone UNIQUE</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Booking</td>
+                                    <td><code>booking_id</code></td>
+                                    <td>check_in_date, monthly_rent, check_out_date, booking_status</td>
+                                    <td><code>bed_id &rarr; Bed</code>, <code>tenant_id &rarr; Tenant</code></td>
+                                    <td>3NF: Historical rental contracts, audit trails</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Payment</td>
+                                    <td><code>payment_id</code></td>
+                                    <td>amount, payment_date, payment_mode</td>
+                                    <td><code>booking_id &rarr; Booking</code></td>
+                                    <td>3NF: 1:N with Booking, amount &gt; 0 check</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Complaint</td>
+                                    <td><code>complaint_id</code></td>
+                                    <td>description, status, complaint_date</td>
+                                    <td><code>tenant_id &rarr; Tenant</code></td>
+                                    <td>3NF: 1:N with Tenant</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-primary">owner_complaint (Junction)</td>
+                                    <td><code>(owner_id, complaint_id)</code></td>
+                                    <td>assigned_date</td>
+                                    <td><code>owner_id &rarr; Owner</code>, <code>complaint_id &rarr; Complaint</code></td>
+                                    <td>3NF: Resolves M:N relationship with composite primary key</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">users (Auth)</td>
+                                    <td><code>user_id</code></td>
+                                    <td>email, password_hash, role</td>
+                                    <td><code>owner_id &rarr; Owner</code>, <code>tenant_id &rarr; Tenant</code></td>
+                                    <td>Role-based access control, bcrypt hashed</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/showcase.js"></script>
+</body>
+</html>
+

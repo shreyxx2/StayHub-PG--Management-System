@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Details & Bed Booking - StayHub PG</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/index.html">
+                <i class="fas fa-hotel text-primary fs-3"></i>
+                <span>StayHub <span class="text-secondary fw-bold">PG</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/showcase.html">SQL Showcase</a></li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0 align-items-center" id="navbar-auth-links">
+                    <!-- Populated dynamically by api.js -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="mb-4">
+            <a href="/index.html" class="text-decoration-none text-muted small fw-semibold">
+                <i class="fas fa-arrow-left me-1"></i> Back to all properties
+            </a>
+        </div>
+
+        <div id="propertyContainer">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="text-muted mt-2">Loading property and room details...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="bookingModalLabel">
+                        <i class="fas fa-calendar-check me-2"></i> Book Bed
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="bookingForm">
+                    <div class="modal-body p-4">
+
+                        <input type="hidden" id="modalBedId">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Selected Bed</label>
+                            <input type="text" id="modalBedLabel" class="form-control bg-light" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Check-In Date *</label>
+                            <input type="date" id="modalCheckInDate" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Agreed Monthly Rent (₹) *</label>
+                            <input type="number" id="modalMonthlyRent" class="form-control" placeholder="e.g. 7500" min="1000" step="100" required>
+                        </div>
+
+                        <div id="tenantNotice" class="small text-muted"></div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" id="confirmBookingBtn" class="btn btn-primary fw-semibold px-4">
+                            <i class="fas fa-check-circle me-1"></i> Confirm Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p class="mb-1 text-light opacity-75">StayHub PG Management System &bull; College DBMS Academic Project</p>
+            <p class="small text-muted mb-0">Powered by MySQL 8, Express.js, Raw Parameterized SQL, and Vanilla JavaScript</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/property.js"></script>
+</body>
+</html>
+
